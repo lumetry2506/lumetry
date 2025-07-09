@@ -4,27 +4,145 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>문의 - LUMETRY</title>
-  <!-- Firebase SDKs (비모듈 방식) -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBufbOgPXVxsZoNicVUZg2aOEaeLpKyVA8",
+      authDomain: "lumetry-cc7cc.firebaseapp.com",
+      projectId: "lumetry-cc7cc",
+      storageBucket: "lumetry-cc7cc.appspot.com",
+      messagingSenderId: "33571840437",
+      appId: "1:33571840437:web:25680c845b4857493079fc",
+      measurementId: "G-VX6Z2L9XW6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const form = document.getElementById('contact-form');
+      const inquiryList = document.getElementById('inquiry-list');
+      const writeBtn = document.getElementById('write-btn');
+      const formContainer = document.getElementById('form-container');
+      const detailContainer = document.getElementById('detail-container');
+      const detailContent = document.getElementById('detail-content');
+
+      if (writeBtn) {
+        writeBtn.addEventListener('click', () => {
+          formContainer.style.display = 'block';
+          detailContainer.style.display = 'none';
+          window.scrollTo({ top: formContainer.offsetTop, behavior: 'smooth' });
+        });
+      }
+
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const name = form.name.value;
+          const phone = form.phone?.value || "";
+          const email = form.email.value;
+          const message = form.message.value;
+          const password = form.password.value;
+          const isPrivate = form.private?.checked || false;
+
+          try {
+            await addDoc(collection(db, "inquiries"), {
+              name,
+              phone,
+              email,
+              message,
+              password,
+              isPrivate,
+              timestamp: new Date()
+            });
+            alert("문의가 등록되었습니다.");
+            form.reset();
+            location.reload();
+          } catch (error) {
+            alert("오류가 발생했습니다. 다시 시도해 주세요.");
+            console.error("Error adding document: ", error);
+          }
+        });
+      }
+
+      const q = query(collection(db, "inquiries"), orderBy("timestamp", "desc"), limit(30));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const listItem = document.createElement('li');
+        listItem.textContent = `${data.name}님의 문의 ${data.isPrivate ? "(비밀글)" : "(공개)"}`;
+        listItem.style.cursor = 'pointer';
+        listItem.addEventListener('click', () => {
+          if (data.isPrivate) {
+            const inputPw = prompt("비밀번호를 입력해주세요:");
+            if (inputPw !== data.password) {
+              alert("비밀번호가 일치하지 않습니다.");
+              return;
+            }
+          }
+          detailContent.innerHTML = `
+            <h3>${data.name}님의 문의</h3>
+            <p><strong>연락처:</strong> ${data.phone}</p>
+            <p><strong>이메일:</strong> ${data.email}</p>
+            <p><strong>내용:</strong><br>${data.message}</p>
+          `;
+          detailContainer.style.display = 'block';
+          formContainer.style.display = 'none';
+          window.scrollTo({ top: detailContainer.offsetTop, behavior: 'smooth' });
+        });
+        inquiryList.appendChild(listItem);
+      });
+    });
+  </script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 1rem;
+      margin: 0;
+      padding: 0;
     }
     header nav {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      background: #f4f4f4;
+      padding: 10px 20px;
     }
-    nav ul {
+    header nav img {
+      height: 40px;
+    }
+    header nav ul {
       display: flex;
       list-style: none;
-      gap: 1rem;
+      margin-left: auto;
     }
-    .inquiry-list-container ul li {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #ccc;
+    header nav ul li {
+      margin-left: 20px;
+    }
+    header nav ul li a {
+      text-decoration: none;
+      color: black;
+    }
+    .container {
+      padding: 20px;
+    }
+    .email-info {
+      font-weight: bold;
+    }
+    #contact-form input, #contact-form textarea {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      font-size: 14px;
+    }
+    #contact-form button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #2c3e50;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
     .detail-container {
       display: none;
@@ -33,19 +151,10 @@
       background: #f1f1f1;
       border-radius: 5px;
     }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-width: 500px;
-    }
-    form input, form textarea {
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
     footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
+      text-align: center;
+      padding: 20px;
+      background: #f4f4f4;
     }
   </style>
 </head>
@@ -53,7 +162,7 @@
   <header>
     <nav>
       <a href="index.html" class="logo-link">
-        <img src="logo.png" alt="Lumetry Logo" height="50">
+        <img src="logo.png" alt="Lumetry Logo">
       </a>
       <ul>
         <li><a href="index.html">홈</a></li>
@@ -107,93 +216,5 @@
     &copy; 2025 Lumetry Inc. All rights reserved. <br>
     이메일: <a href="mailto:lumetry2506@gmail.com">lumetry2506@gmail.com</a>
   </footer>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBufbOgPXVxsZoNicVUZg2aOEaeLpKyVA8",
-      authDomain: "lumetry-cc7cc.firebaseapp.com",
-      projectId: "lumetry-cc7cc",
-      storageBucket: "lumetry-cc7cc.firebasestorage.app",
-      messagingSenderId: "33571840437",
-      appId: "1:33571840437:web:25680c845b4857493079fc",
-      measurementId: "G-VX6Z2L9XW6"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      const form = document.getElementById('contact-form');
-      const inquiryList = document.getElementById('inquiry-list');
-      const writeBtn = document.getElementById('write-btn');
-      const formContainer = document.getElementById('form-container');
-      const detailContainer = document.getElementById('detail-container');
-      const detailContent = document.getElementById('detail-content');
-
-      writeBtn.addEventListener('click', () => {
-        formContainer.style.display = 'block';
-        detailContainer.style.display = 'none';
-        window.scrollTo({ top: formContainer.offsetTop, behavior: 'smooth' });
-      });
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = form.name.value;
-        const phone = form.phone.value;
-        const email = form.email.value;
-        const message = form.message.value;
-        const password = form.password.value;
-        const isPrivate = form.private.checked;
-
-        try {
-          await db.collection("inquiries").add({
-            name,
-            phone,
-            email,
-            message,
-            password,
-            isPrivate,
-            timestamp: new Date()
-          });
-          alert("문의가 등록되었습니다.");
-          form.reset();
-          location.reload();
-        } catch (error) {
-          alert("오류가 발생했습니다. 다시 시도해 주세요.");
-          console.error("Error adding document: ", error);
-        }
-      });
-
-      const snapshot = await db.collection("inquiries")
-        .orderBy("timestamp", "desc")
-        .limit(30)
-        .get();
-
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const listItem = document.createElement('li');
-        listItem.textContent = `${data.name}님의 문의 ${data.isPrivate ? "(비밀글)" : "(공개)"}`;
-        listItem.style.cursor = 'pointer';
-        listItem.addEventListener('click', async () => {
-          if (data.isPrivate) {
-            const inputPw = prompt("비밀번호를 입력해주세요:");
-            if (inputPw !== data.password) {
-              alert("비밀번호가 일치하지 않습니다.");
-              return;
-            }
-          }
-          detailContent.innerHTML = `
-            <h3>${data.name}님의 문의</h3>
-            <p><strong>연락처:</strong> ${data.phone}</p>
-            <p><strong>이메일:</strong> ${data.email}</p>
-            <p><strong>내용:</strong><br>${data.message}</p>
-          `;
-          detailContainer.style.display = 'block';
-          formContainer.style.display = 'none';
-          window.scrollTo({ top: detailContainer.offsetTop, behavior: 'smooth' });
-        });
-        inquiryList.appendChild(listItem);
-      });
-    });
-  </script>
 </body>
 </html>
