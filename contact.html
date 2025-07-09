@@ -6,7 +6,7 @@
   <title>문의 - LUMETRY</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBufbOgPXVxsZoNicVUZg2aOEaeLpKyVA8",
@@ -21,32 +21,48 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       const form = document.getElementById('contact-form');
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = form.name.value;
-        const phone = form.phone.value;
-        const email = form.email.value;
-        const message = form.message.value;
-        const password = form.password.value;
+      const inquiryList = document.getElementById('inquiry-list');
 
-        try {
-          await addDoc(collection(db, "inquiries"), {
-            name,
-            phone,
-            email,
-            message,
-            password,
-            timestamp: new Date()
-          });
-          alert("문의가 비밀글로 정상적으로 등록되었습니다.");
-          form.reset();
-        } catch (error) {
-          alert("오류가 발생했습니다. 다시 시도해 주세요.");
-          console.error("Error adding document: ", error);
-        }
-      });
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const name = form.name.value;
+          const phone = form.phone.value;
+          const email = form.email.value;
+          const message = form.message.value;
+          const password = form.password.value;
+
+          try {
+            await addDoc(collection(db, "inquiries"), {
+              name,
+              phone,
+              email,
+              message,
+              password,
+              timestamp: new Date()
+            });
+            alert("문의가 비밀글로 정상적으로 등록되었습니다.");
+            form.reset();
+            location.reload();
+          } catch (error) {
+            alert("오류가 발생했습니다. 다시 시도해 주세요.");
+            console.error("Error adding document: ", error);
+          }
+        });
+      }
+
+      if (inquiryList) {
+        const q = query(collection(db, "inquiries"), orderBy("timestamp", "desc"), limit(30));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const listItem = document.createElement('li');
+          listItem.textContent = `${data.name}님의 문의 (비밀글)`;
+          inquiryList.appendChild(listItem);
+        });
+      }
     });
   </script>
   <style>
@@ -69,7 +85,7 @@
       align-items: center;
       padding: 1rem;
     }
-    nav img {
+    nav a.logo-link img {
       height: 40px;
     }
     nav ul {
@@ -124,6 +140,17 @@
       font-weight: bold;
       font-size: 1.1rem;
     }
+    .inquiry-list-container {
+      margin-top: 3rem;
+    }
+    .inquiry-list-container ul {
+      list-style: none;
+      padding: 0;
+    }
+    .inquiry-list-container li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #ccc;
+    }
     footer {
       text-align: center;
       padding: 2rem;
@@ -136,7 +163,9 @@
 <body>
   <header>
     <nav>
-      <img src="logo.png" alt="Lumetry Logo">
+      <a href="index.html" class="logo-link">
+        <img src="logo.png" alt="Lumetry Logo">
+      </a>
       <ul>
         <li><a href="index.html">홈</a></li>
         <li><a href="company.html">회사소개</a></li>
@@ -166,8 +195,13 @@
       <label for="password">비밀번호 (확인용)</label>
       <input type="password" id="password" name="password" required>
 
-      <button type="submit">보내기</button>
+      <button type="submit">등록</button>
     </form>
+
+    <div class="inquiry-list-container">
+      <h2>문의 목록</h2>
+      <ul id="inquiry-list"></ul>
+    </div>
   </div>
 
   <footer>
