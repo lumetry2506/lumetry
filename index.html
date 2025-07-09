@@ -1,12 +1,54 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>Lumetry Test</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LUMETRY</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+    .button {
+      padding: 12px 24px;
+      background-color: white;
+      color: #2a5298;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+    .button:hover {
+      background-color: #f0f0f0;
+    }
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to Lumetry!</h1>
-  <p>사이트가 정상적으로 작동 중입니다.</p>
+  <h1>Welcome to LUMETRY</h1>
+  <p>더 나은 제조를 위한 디지털 솔루션 파트너</p>
+  <a href="mailto:contact@lumetry.co.kr" class="button">문의하기</a>
+  <footer>&copy; 2025 Lumetry Inc. All rights reserved.</footer>
 </body>
 </html>
