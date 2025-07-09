@@ -1,1 +1,127 @@
-<!DOCTYPE html><html lang='ko'><head><meta charset='UTF-8'><title>문의</title></head><body><h1>문의</h1><p>이곳은 문의 페이지입니다. 더미 텍스트입니다.</p></body></html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문의 - LUMETRY</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; background: #f9f9f9; }
+    header {
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 999;
+    }
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+    }
+    nav img {
+      height: 40px;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 800px;
+      margin: 150px auto 50px;
+      padding: 2rem;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      border-radius: 5px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    form label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+    }
+    form input, form textarea {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    form textarea {
+      height: 150px;
+    }
+    form button {
+      display: block;
+      margin: 1rem auto 0;
+      padding: 0.7rem 2rem;
+      background: #1e3c72;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .email-info {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: #f0f0f0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <img src="logo.png" alt="Lumetry Logo">
+      <ul>
+        <li><a href="index.html">홈</a></li>
+        <li><a href="company.html">회사소개</a></li>
+        <li><a href="business.html">사업분야</a></li>
+        <li><a href="products.html">제품</a></li>
+        <li><a href="contact.html">문의</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="email-info">연락처 : lumetry2506@gmail.com</div>
+    <h1>문의하기</h1>
+    <form>
+      <label for="name">이름</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="email">이메일</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="message">문의 내용</label>
+      <textarea id="message" name="message" required></textarea>
+
+      <button type="submit">보내기</button>
+    </form>
+  </div>
+
+  <footer>
+    &copy; 2025 Lumetry Inc. All rights reserved. <br>
+    이메일: <a href="mailto:lumetry2506@gmail.com">lumetry2506@gmail.com</a>
+  </footer>
+</body>
+</html>
